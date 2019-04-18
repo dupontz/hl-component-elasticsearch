@@ -1,5 +1,3 @@
-
-
 # security_groups:
 #   SecurityGroupBastion:
 #     ports:
