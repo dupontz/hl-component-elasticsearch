@@ -21,5 +21,3 @@
 #   EBSEnabled: true
 #   VolumeSize: 100
 #   VolumeType: gp2
-
-number_of_security_groups: 1
