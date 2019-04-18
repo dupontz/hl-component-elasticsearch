@@ -31,6 +31,12 @@ CloudFormation do
     end if sg.key?('ports')
   end if defined? security_groups
 
+  IAM_ServiceLinkedRole('ESRole') {
+    AWSServiceName 'es.amazonaws.com'
+    Description FnSub("${EnvironmentName} - ElasticSearch Service Linked Role")
+    CustomSuffix Ref('EnvironmentName')
+  }
+
 
   Elasticsearch_Domain('ElasticSearchVPCCluster') do
     DomainName Ref('ESDomainName')
@@ -53,6 +59,24 @@ CloudFormation do
       SecurityGroupIds: [Ref('SecurityGroupES')]
     })
     Tags sg_tags
+    AccessPolicies(
+      {
+        Version: "2012-10-17",
+        Statement: [{
+          Effect: "Allow",
+          Principal: {
+            AWS: "*"
+          },
+          Action: "es:*",
+          Resource: FnSub("arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${ESDomainName}/*")
+        }]
+      }
+    )
+  end
+
+  Output("ESClusterEndpoint") do
+    Value(FnGetAtt('ElasticSearchVPCCluster', 'DomainEndpoint'))
+    Export FnSub("${EnvironmentName}-#{component_name}-ESClusterEndpoint")
   end
 
 end
