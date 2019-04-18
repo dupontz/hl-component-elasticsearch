@@ -34,9 +34,7 @@ CloudFormation do
   IAM_ServiceLinkedRole('ESRole') {
     AWSServiceName 'es.amazonaws.com'
     Description FnSub("${EnvironmentName} - ElasticSearch Service Linked Role")
-    CustomSuffix Ref('EnvironmentName')
-  }
-
+  }s
 
   Elasticsearch_Domain('ElasticSearchVPCCluster') do
     DomainName Ref('ESDomainName')
