@@ -31,11 +31,6 @@ CloudFormation do
     end if sg.key?('ports')
   end if defined? security_groups
 
-  IAM_ServiceLinkedRole('ESRole') {
-    AWSServiceName 'es.amazonaws.com'
-    Description FnSub("${EnvironmentName} - ElasticSearch Service Linked Role")
-  }
-
   Elasticsearch_Domain('ElasticSearchVPCCluster') do
     DomainName Ref('ESDomainName')
     AdvancedOptions advanced_options if defined? advanced_options
