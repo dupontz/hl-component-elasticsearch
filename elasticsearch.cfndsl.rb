@@ -49,7 +49,7 @@ CloudFormation do
       AutomatedSnapshotStartHour: Ref('AutomatedSnapshotStartHour')
     })
     VPCOptions({
-      SubnetIds: FnSelect(0, FnSplit(',', Ref('Subnets'))),
+      SubnetIds: [FnSelect(0, FnSplit(',', Ref('Subnets')))],
       SecurityGroupIds: [Ref('SecurityGroupES')]
     })
     Tags sg_tags
