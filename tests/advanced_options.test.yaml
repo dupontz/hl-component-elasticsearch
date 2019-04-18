@@ -1,0 +1,7 @@
+test_metadata:
+  type: config
+  name: advanced config
+  description: creates an ES cluster with advanced config
+
+advanced_options:
+  rest.action.multi.allow_explicit_index: true

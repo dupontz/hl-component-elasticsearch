@@ -1,0 +1,9 @@
+test_metadata:
+  type: config
+  name: ebs config
+  description: creates an ES cluster with ebs config
+
+ebs_options:
+  EBSEnabled: true
+  VolumeSize: 100
+  VolumeType: gp2

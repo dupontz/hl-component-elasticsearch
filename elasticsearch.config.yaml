@@ -1,0 +1,25 @@
+
+
+security_groups:
+  SecurityGroupBastion:
+    ports:
+      - from: 22
+        to: 22
+      - from: 443
+        to: 443
+  SecurityGroupBackplane:
+    ports:
+      - from: 22
+        to: 22
+      - from: 443
+        to: 443
+        
+# advanced_options:
+#   rest.action.multi.allow_explicit_index: true
+
+# ebs_options:
+#   EBSEnabled: true
+#   VolumeSize: 100
+#   VolumeType: gp2
+
+number_of_security_groups: 1

@@ -1,0 +1,4 @@
+test_metadata:
+  type: config
+  name: default config
+  description: creates an ES cluster using the default config
