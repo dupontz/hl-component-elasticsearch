@@ -72,4 +72,9 @@ CloudFormation do
     Export FnSub("${EnvironmentName}-#{component_name}-ESClusterEndpoint")
   end
 
+  Output("SecurityGroupES") do
+    Value(Ref('SecurityGroupES'))
+    Export FnSub("${EnvironmentName}-#{component_name}-SecurityGroup")
+  end
+
 end
