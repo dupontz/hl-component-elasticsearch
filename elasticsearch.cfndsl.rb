@@ -3,7 +3,9 @@ CloudFormation do
 
   safe_component_name = external_parameters[:component_name].capitalize.gsub('_','').gsub('-','')
 
-  Condition("ZoneAwarenessEnabled", FnNot(FnEquals(Ref('InstanceCount'), '1')))
+  Condition("ZoneAwarenessEnabled", FnNot(FnEquals(Ref(:AvailabilityZones), 1)))
+  Condition("Az2", FnEquals(Ref(:AvailabilityZones), 2))
+  Condition("Az3", FnEquals(Ref(:AvailabilityZones), 3))
 
   sg_tags = []
   sg_tags << { Key: 'Environment', Value: Ref(:EnvironmentName)}
@@ -35,6 +37,24 @@ CloudFormation do
 
   advanced_options = external_parameters.fetch(:advanced_options, {})
   ebs_options = external_parameters.fetch(:ebs_options, {})
+
+  subnets = FnIf('Az2',
+                [
+                  FnSelect(0, FnSplit(',', Ref('Subnets'))), 
+                  FnSelect(1, FnSplit(',', Ref('Subnets')))
+                ],
+                FnIf('Az3',
+                  [
+                    FnSelect(0, FnSplit(',', Ref('Subnets'))), 
+                    FnSelect(1, FnSplit(',', Ref('Subnets'))), 
+                    FnSelect(2, FnSplit(',', Ref('Subnets')))
+                  ],
+                  [
+                    FnSelect(0, FnSplit(',', Ref('Subnets')))
+                  ]
+                )
+              )
+
   Elasticsearch_Domain('ElasticSearchVPCCluster') do
     DomainName Ref('ESDomainName')
     AdvancedOptions advanced_options unless advanced_options.empty?
@@ -42,7 +62,10 @@ CloudFormation do
     ElasticsearchClusterConfig({
       InstanceCount: Ref('InstanceCount'),
       InstanceType: Ref('InstanceType'),
-      ZoneAwarenessEnabled: FnIf('ZoneAwarenessEnabled', 'true','false')
+      ZoneAwarenessEnabled: FnIf('ZoneAwarenessEnabled', 'true','false'),
+      ZoneAwarenessConfig: {
+        AvailabilityZoneCount: Ref(:AvailabilityZones)
+      }
     })
     ElasticsearchVersion Ref('ElasticsearchVersion')
     EncryptionAtRestOptions({
@@ -52,7 +75,7 @@ CloudFormation do
       AutomatedSnapshotStartHour: Ref('AutomatedSnapshotStartHour')
     })
     VPCOptions({
-      SubnetIds: [FnSelect(0, FnSplit(',', Ref('Subnets')))],
+      SubnetIds: subnets,
       SecurityGroupIds: [Ref('SecurityGroupES')]
     })
     Tags sg_tags
