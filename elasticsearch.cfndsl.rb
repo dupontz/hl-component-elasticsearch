@@ -63,9 +63,12 @@ CloudFormation do
       InstanceCount: Ref('InstanceCount'),
       InstanceType: Ref('InstanceType'),
       ZoneAwarenessEnabled: FnIf('ZoneAwarenessEnabled', 'true','false'),
-      ZoneAwarenessConfig: {
-        AvailabilityZoneCount: Ref(:AvailabilityZones)
-      }
+      ZoneAwarenessConfig: FnIf('ZoneAwarenessEnabled', 
+        {
+          AvailabilityZoneCount: Ref(:AvailabilityZones)
+        },
+        Ref('AWS::NoValue')
+      )
     })
     ElasticsearchVersion Ref('ElasticsearchVersion')
     EncryptionAtRestOptions({
