@@ -37,6 +37,7 @@ CloudFormation do
 
   advanced_options = external_parameters.fetch(:advanced_options, {})
   ebs_options = external_parameters.fetch(:ebs_options, {})
+  domain_endpoint_options = external_parameters.fetch(:domain_endpoint_options, {})
 
   subnets = FnIf('Az2',
                 [
@@ -58,6 +59,7 @@ CloudFormation do
   Elasticsearch_Domain('ElasticSearchVPCCluster') do
     DomainName Ref('ESDomainName')
     AdvancedOptions advanced_options unless advanced_options.empty?
+    DomainEndpointOptions domain_endpoint_options unless domain_endpoint_options.empty?
     EBSOptions ebs_options unless ebs_options.empty?
     ElasticsearchClusterConfig({
       InstanceCount: Ref('InstanceCount'),

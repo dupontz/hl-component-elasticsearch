@@ -1,0 +1,8 @@
+test_metadata:
+  type: config
+  name: domain endpoint config
+  description: creates an ES cluster with domain endpoint config
+
+domain_endpoint_options:
+  EnforceHTTPS: true
+  TLSSecurityPolicy: Policy-Min-TLS-1-2-2019-07
