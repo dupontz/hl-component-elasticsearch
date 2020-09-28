@@ -59,7 +59,7 @@ CloudFormation do
   Elasticsearch_Domain('ElasticSearchVPCCluster') do
     DomainName Ref('ESDomainName')
     AdvancedOptions advanced_options unless advanced_options.empty?
-    DomainEndpointOptions domain_endpoint_options unless domain_endpoint_options.empty?
+    Property(:DomainEndpointOptions, domain_endpoint_options) unless domain_endpoint_options.empty?
     EBSOptions ebs_options unless ebs_options.empty?
     ElasticsearchClusterConfig({
       InstanceCount: Ref('InstanceCount'),
