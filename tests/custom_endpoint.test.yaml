@@ -1,0 +1,12 @@
+test_metadata:
+  type: config
+  name: custom endpoint domain config
+  description: creates an ES cluster with domain endpoint config
+
+test_parameters:
+  CustomEndpoint: search.example.com
+  CustomEndpointCertificateArn: arn:mycert
+
+domain_endpoint_options:
+  EnforceHTTPS: true
+  TLSSecurityPolicy: Policy-Min-TLS-1-2-2019-07

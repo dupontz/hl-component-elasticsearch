@@ -18,6 +18,9 @@ CfhighlanderTemplate do
     ComponentParam 'EncryptionAtRest', 'true', allowedValues: ['true','false']
     ComponentParam 'AutomatedSnapshotStartHour', '0'
 
+    ComponentParam 'CustomEndpoint', ''
+    ComponentParam 'CustomEndpointCertificateArn', ''
+
   end
 
 end
