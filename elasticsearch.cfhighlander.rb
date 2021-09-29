@@ -18,6 +18,8 @@ CfhighlanderTemplate do
     ComponentParam 'EncryptionAtRest', 'true', allowedValues: ['true','false']
     ComponentParam 'AutomatedSnapshotStartHour', '0'
 
+    ComponentParam 'DedicatedMasterCount', ''
+    ComponentParam 'DedicatedMasterType'
   end
 
 end

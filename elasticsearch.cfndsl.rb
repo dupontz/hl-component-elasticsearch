@@ -3,6 +3,7 @@ CloudFormation do
 
   safe_component_name = external_parameters[:component_name].capitalize.gsub('_','').gsub('-','')
 
+  Condition("DedicatedMasterSet", FnNot(FnEquals(Ref('DedicatedMasterCount'), '')))
   Condition("ZoneAwarenessEnabled", FnNot(FnEquals(Ref(:AvailabilityZones), 1)))
   Condition("Az2", FnEquals(Ref(:AvailabilityZones), 2))
   Condition("Az3", FnEquals(Ref(:AvailabilityZones), 3))
@@ -62,6 +63,9 @@ CloudFormation do
     Property(:DomainEndpointOptions, domain_endpoint_options) unless domain_endpoint_options.empty?
     EBSOptions ebs_options unless ebs_options.empty?
     ElasticsearchClusterConfig({
+      DedicatedMasterEnabled: FnIf('DedicatedMasterSet', true, Ref('AWS::NoValue')),
+      DedicatedMasterCount: FnIf('DedicatedMasterSet', Ref('DedicatedMasterCount'), Ref('AWS::NoValue')),
+      DedicatedMasterType: FnIf('DedicatedMasterSet', Ref('DedicatedMasterType'), Ref('AWS::NoValue')),
       InstanceCount: Ref('InstanceCount'),
       InstanceType: Ref('InstanceType'),
       ZoneAwarenessEnabled: FnIf('ZoneAwarenessEnabled', 'true','false'),
