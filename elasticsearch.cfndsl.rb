@@ -39,6 +39,7 @@ CloudFormation do
   advanced_options = external_parameters.fetch(:advanced_options, {})
   ebs_options = external_parameters.fetch(:ebs_options, {})
   domain_endpoint_options = external_parameters.fetch(:domain_endpoint_options, {})
+  enable_version_upgrade = external_parameters.fetch(:enable_version_upgrade, nil)
 
   subnets = FnIf('Az2',
                 [
@@ -101,6 +102,7 @@ CloudFormation do
         }]
       }
     )
+    UpdatePolicy(:EnableVersionUpgrade, enable_version_upgrade) unless enable_version_upgrade.nil?
   end
 
   Output("ESClusterEndpoint") do
