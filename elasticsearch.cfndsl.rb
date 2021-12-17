@@ -7,6 +7,8 @@ CloudFormation do
   Condition("ZoneAwarenessEnabled", FnNot(FnEquals(Ref(:AvailabilityZones), 1)))
   Condition("Az2", FnEquals(Ref(:AvailabilityZones), 2))
   Condition("Az3", FnEquals(Ref(:AvailabilityZones), 3))
+  
+  Condition("CustomEndpointEnabled", FnNot(FnEquals(Ref(:CustomEndpoint), '')))
 
   sg_tags = []
   sg_tags << { Key: 'Environment', Value: Ref(:EnvironmentName)}
@@ -39,6 +41,8 @@ CloudFormation do
   advanced_options = external_parameters.fetch(:advanced_options, {})
   ebs_options = external_parameters.fetch(:ebs_options, {})
   domain_endpoint_options = external_parameters.fetch(:domain_endpoint_options, {})
+  enforce_https = domain_endpoint_options.has_key?('EnforceHTTPS') ? domain_endpoint_options['EnforceHTTPS'] : 'false'
+  tls_policy = domain_endpoint_options.has_key?('TLSSecurityPolicy') ? domain_endpoint_options['TLSSecurityPolicy'] : Ref('AWS::NoValue')
   enable_version_upgrade = external_parameters.fetch(:enable_version_upgrade, nil)
 
   subnets = FnIf('Az2',
@@ -58,10 +62,17 @@ CloudFormation do
                 )
               )
 
+    
   Elasticsearch_Domain('ElasticSearchVPCCluster') do
     DomainName Ref('ESDomainName')
     AdvancedOptions advanced_options unless advanced_options.empty?
-    Property(:DomainEndpointOptions, domain_endpoint_options) unless domain_endpoint_options.empty?
+    Property(:DomainEndpointOptions, {
+         EnforceHTTPS: enforce_https,
+         TLSSecurityPolicy: tls_policy,
+         CustomEndpointEnabled: FnIf('CustomEndpointEnabled', 'true','false'),
+         CustomEndpoint: FnIf('CustomEndpointEnabled', Ref('CustomEndpoint'), Ref('AWS::NoValue')),
+         CustomEndpointCertificateArn: FnIf('CustomEndpointEnabled', Ref('CustomEndpointCertificateArn'), Ref('AWS::NoValue')),
+    })
     EBSOptions ebs_options unless ebs_options.empty?
     ElasticsearchClusterConfig({
       DedicatedMasterEnabled: FnIf('DedicatedMasterSet', true, Ref('AWS::NoValue')),
