@@ -17,9 +17,10 @@ CfhighlanderTemplate do
     ComponentParam 'InstanceType', 't2.micro.elasticsearch'
     ComponentParam 'EncryptionAtRest', 'true', allowedValues: ['true','false']
     ComponentParam 'AutomatedSnapshotStartHour', '0'
-
     ComponentParam 'CustomEndpoint', ''
     ComponentParam 'CustomEndpointCertificateArn', ''
+    ComponentParam 'DedicatedMasterCount', ''
+    ComponentParam 'DedicatedMasterType'
 
   end
 

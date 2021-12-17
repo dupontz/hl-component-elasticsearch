@@ -3,6 +3,7 @@ CloudFormation do
 
   safe_component_name = external_parameters[:component_name].capitalize.gsub('_','').gsub('-','')
 
+  Condition("DedicatedMasterSet", FnNot(FnEquals(Ref('DedicatedMasterCount'), '')))
   Condition("ZoneAwarenessEnabled", FnNot(FnEquals(Ref(:AvailabilityZones), 1)))
   Condition("Az2", FnEquals(Ref(:AvailabilityZones), 2))
   Condition("Az3", FnEquals(Ref(:AvailabilityZones), 3))
@@ -42,6 +43,7 @@ CloudFormation do
   domain_endpoint_options = external_parameters.fetch(:domain_endpoint_options, {})
   enforce_https = domain_endpoint_options.has_key?('EnforceHTTPS') ? domain_endpoint_options['EnforceHTTPS'] : 'false'
   tls_policy = domain_endpoint_options.has_key?('TLSSecurityPolicy') ? domain_endpoint_options['TLSSecurityPolicy'] : Ref('AWS::NoValue')
+  enable_version_upgrade = external_parameters.fetch(:enable_version_upgrade, nil)
 
   subnets = FnIf('Az2',
                 [
@@ -73,6 +75,9 @@ CloudFormation do
     })
     EBSOptions ebs_options unless ebs_options.empty?
     ElasticsearchClusterConfig({
+      DedicatedMasterEnabled: FnIf('DedicatedMasterSet', true, Ref('AWS::NoValue')),
+      DedicatedMasterCount: FnIf('DedicatedMasterSet', Ref('DedicatedMasterCount'), Ref('AWS::NoValue')),
+      DedicatedMasterType: FnIf('DedicatedMasterSet', Ref('DedicatedMasterType'), Ref('AWS::NoValue')),
       InstanceCount: Ref('InstanceCount'),
       InstanceType: Ref('InstanceType'),
       ZoneAwarenessEnabled: FnIf('ZoneAwarenessEnabled', 'true','false'),
@@ -108,6 +113,7 @@ CloudFormation do
         }]
       }
     )
+    UpdatePolicy(:EnableVersionUpgrade, enable_version_upgrade) unless enable_version_upgrade.nil?
   end
 
   Output("ESClusterEndpoint") do

@@ -1,0 +1,6 @@
+test_metadata:
+  type: config
+  name: enable version upgrade
+  description: Enables an in place version upgrade instead of a replacement
+
+enable_version_upgrade: true
