@@ -18,6 +18,7 @@ CloudFormation do
   extra_tags = external_parameters.fetch(extra_tags, {})
   extra_tags.each { |key,value| sg_tags << { Key: "#{key}", Value: FnSub(value) } }
   
+  ip_blocks = external_parameters.fetch(:ip_blocks, {})
   security_group_rules = external_parameters.fetch(:security_group_rules, [])
 
   EC2_SecurityGroup("SecurityGroupES") do
