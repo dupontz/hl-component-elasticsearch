@@ -38,6 +38,10 @@ CloudFormation do
     end if sg.key?('ports')
   end
 
+  if security_group_rules.any?
+    SecurityGroupIngress generate_security_group_rules(security_group_rules,ip_blocks)
+  end
+
   advanced_options = external_parameters.fetch(:advanced_options, {})
   ebs_options = external_parameters.fetch(:ebs_options, {})
   domain_endpoint_options = external_parameters.fetch(:domain_endpoint_options, {})
