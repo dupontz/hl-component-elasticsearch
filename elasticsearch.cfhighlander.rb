@@ -1,5 +1,7 @@
 CfhighlanderTemplate do
 
+  DependsOn 'lib-ec2@0.1.0'
+
   Parameters do
     ComponentParam 'EnvironmentName', 'dev', isGlobal: true
     ComponentParam 'EnvironmentType', 'development', allowedValues: ['development','production'], isGlobal: true
