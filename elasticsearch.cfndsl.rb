@@ -17,10 +17,16 @@ CloudFormation do
 
   extra_tags = external_parameters.fetch(extra_tags, {})
   extra_tags.each { |key,value| sg_tags << { Key: "#{key}", Value: FnSub(value) } }
+  
+  ip_blocks = external_parameters.fetch(:ip_blocks, {})
+  security_group_rules = external_parameters.fetch(:security_group_rules, [])
 
   EC2_SecurityGroup("SecurityGroupES") do
     GroupDescription FnSub("${EnvironmentName}-#{external_parameters[:component_name]}")
     VpcId Ref('VPCId')
+    if security_group_rules.any?
+      SecurityGroupIngress generate_security_group_rules(security_group_rules,ip_blocks)
+    end
     Tags sg_tags
   end
 
@@ -37,6 +43,8 @@ CloudFormation do
       end
     end if sg.key?('ports')
   end
+
+
 
   advanced_options = external_parameters.fetch(:advanced_options, {})
   ebs_options = external_parameters.fetch(:ebs_options, {})
