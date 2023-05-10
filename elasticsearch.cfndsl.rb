@@ -3,7 +3,8 @@ CloudFormation do
 
   safe_component_name = external_parameters[:component_name].capitalize.gsub('_','').gsub('-','')
 
-  Condition("DedicatedMasterSet", FnNot(FnEquals(Ref('DedicatedMasterCount'), '')))
+  Condition("DedicatedMasterSet", FnNot(FnEquals(Ref('DedicatedMasterCount'), 0)))
+  Condition("WarmEnable", FnNot(FnEquals(Ref('WarmNodeCount'), 0)))
   Condition("ZoneAwarenessEnabled", FnNot(FnEquals(Ref(:AvailabilityZones), 1)))
   Condition("Az2", FnEquals(Ref(:AvailabilityZones), 2))
   Condition("Az3", FnEquals(Ref(:AvailabilityZones), 3))
@@ -83,11 +84,14 @@ CloudFormation do
     })
     EBSOptions ebs_options unless ebs_options.empty?
     ElasticsearchClusterConfig({
-      DedicatedMasterEnabled: FnIf('DedicatedMasterSet', true, Ref('AWS::NoValue')),
+      DedicatedMasterEnabled: FnIf('DedicatedMasterSet', true, false),
       DedicatedMasterCount: FnIf('DedicatedMasterSet', Ref('DedicatedMasterCount'), Ref('AWS::NoValue')),
       DedicatedMasterType: FnIf('DedicatedMasterSet', Ref('DedicatedMasterType'), Ref('AWS::NoValue')),
       InstanceCount: Ref('InstanceCount'),
       InstanceType: Ref('InstanceType'),
+      WarmEnabled: FnIf('WarmEnable', true, false),
+      WarmCount: FnIf('WarmEnable', Ref('WarmNodeCount'), Ref('AWS::NoValue')),
+      WarmType: FnIf('WarmEnable', Ref(:WarmNodeType), Ref('AWS::NoValue')),
       ZoneAwarenessEnabled: FnIf('ZoneAwarenessEnabled', 'true','false'),
       ZoneAwarenessConfig: FnIf('ZoneAwarenessEnabled', 
         {

@@ -21,8 +21,11 @@ CfhighlanderTemplate do
     ComponentParam 'AutomatedSnapshotStartHour', '0'
     ComponentParam 'CustomEndpoint', ''
     ComponentParam 'CustomEndpointCertificateArn', ''
-    ComponentParam 'DedicatedMasterCount', ''
+    ComponentParam 'DedicatedMasterCount', 0
     ComponentParam 'DedicatedMasterType'
+
+    ComponentParam 'WarmNodeCount', 0
+    ComponentParam 'WarmNodeType', 'ultrawarm1.medium.elasticsearch'
 
   end
 
